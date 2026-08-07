@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, ci/proof-build]
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
 
@@ -519,6 +519,13 @@ jobs:
           fi
           "$BIN" usage --provider codex --web 2>&1 | tee /tmp/codexbarcli-stderr.txt >/dev/null || true
           grep -q "macOS" /tmp/codexbarcli-stderr.txt
+
+      - name: Upload CodexBarCLI (proof build)
+        uses: actions/upload-artifact@v4
+        with:
+          name: CodexBarCLI-${{ matrix.name }}
+          path: .build/release/CodexBarCLI
+          if-no-files-found: error
 
       - name: Summarize Linux CLI build
         if: ${{ always() }}
